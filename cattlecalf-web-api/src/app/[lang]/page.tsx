@@ -1,5 +1,6 @@
 import Image from "next/image";
 import FeatureContainer from "./ui/main-page/feature-container";
+import titlecalf from "@/../public/title_calf.svg";
 
 export default function Home() {
   return (
@@ -16,12 +17,10 @@ export default function Home() {
           className="xs:p-12 xs:px-6 xs:py-12 relative col-span-2 border-0 border-b border-gray-200 p-6 px-6 py-6 md:p-16"
         >
           <Image
+            src={titlecalf}
             className="mx-auto size-90 dark:invert"
             aria-details="just a brown cow looking to the left."
             alt="title calf"
-            width={500}
-            height={500}
-            src="/title_calf.svg"
           ></Image>
           <div className="flex items-center">
             <p className="mx-auto max-w-6xl text-center text-lg">
