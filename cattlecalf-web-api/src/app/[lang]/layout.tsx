@@ -52,7 +52,10 @@ export default async function RootLayout({
       >
         <NavBar buttonText={dict.navbar["dashboard-button"]} />
         {children}
-        <Footer />
+        <Footer
+          loveMessage={dict.footer.loveMessage}
+          openSourceTitle={dict.footer.openSourceTitle}
+        />
       </body>
     </html>
   );

@@ -13,13 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-export function Footer() {
+export function Footer({
+  loveMessage,
+  openSourceTitle,
+}: {
+  loveMessage: string;
+  openSourceTitle: string;
+}) {
   return (
     <div className="bg-background-100 flex w-full flex-col items-center border-t border-gray-200 py-13 md:items-end">
       <div className="pl-0 md:pr-6">
-        <p>CattleCalf made with love by theRightHoopRod ❤️ </p>
+        <p>{loveMessage} ❤️ </p>
         <p className="text-center">
-          Open-Souce -{" "}
+          {openSourceTitle} -{" "}
           <code>
             <a href="#">16b12j⇗</a>
           </code>

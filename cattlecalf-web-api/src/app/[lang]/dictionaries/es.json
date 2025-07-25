@@ -3,6 +3,15 @@
         "dashboard-button": "Panel de Control"
     },
     "main-page": {
-        "title-titlecow": "Estadísticas de tu rancho + empleados + gráficos"
+        "title-titlecow": "Estadísticas de tu rancho + empleados + gráficos",
+        "feature-title": "Características",
+        "feature-subtitle": "En desarollo, se agregará en un futuro...",
+        "feature-container-1": "Diseño simple, con íconos y gráficos bonitos y fáciles de entender.",
+        "feature-container-2": "Cálculo de salario de empleados.",
+        "feature-container-3": "Proyecto de código libre."
+    },
+    "footer": {
+        "loveMessage": "CattleCalf hecho con amor por theRightHoopRod",
+        "openSourceTitle": "Código Libre"
     }
 }

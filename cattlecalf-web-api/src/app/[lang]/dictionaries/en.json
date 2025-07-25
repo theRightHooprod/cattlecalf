@@ -3,6 +3,15 @@
         "dashboard-button": "Dashboard"
     },
     "main-page": {
-        "title-titlecow": "Graph stadistics of your ranch focused on calves and employees"
+        "title-titlecow": "Graph stadistics of your ranch focused on calves and employees",
+        "feature-title": "Features",
+        "feature-subtitle": "Under development, Plan to be realese in the near future...",
+        "feature-container-1": "Minimalistic disign, with appeling icons and graphs easy to understeand.",
+        "feature-container-2": "Employees salary with graphs.",
+        "feature-container-3": "Open source project."
+    },
+    "footer": {
+        "loveMessage": "CattleCalf made with love by theRightHoopRod",
+        "openSourceTitle": "Open Source"
     }
 }

@@ -27,22 +27,24 @@ export default async function Home({
           </div>
         </div>
         <div className="xs:p-12 xs:px-6 xs:py-10 col-span-2 h-fit p-6 px-6 py-14 md:px-9 lg:px-12">
-          <p className="text-3xl font-semibold tracking-tighter">Features ✨</p>
+          <p className="text-3xl font-semibold tracking-tighter">
+            {dict["main-page"]["feature-title"]} ✨
+          </p>
           <p className="py-6 text-2xl">
-            Under development, Plan to be realese in the near future...
+            {dict["main-page"]["feature-subtitle"]}
           </p>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
             <FeatureContainer
               src="/black-calf.webp"
-              text="Minimalistic disign, with appeling icons and graphs easy to understeand"
+              text={dict["main-page"]["feature-container-1"]}
             />
             <FeatureContainer
               src="/black-calf.webp"
-              text="Employees salary and basic information with graphs"
+              text={dict["main-page"]["feature-container-2"]}
             />
             <FeatureContainer
               src="/black-calf.webp"
-              text="Open source project"
+              text={dict["main-page"]["feature-container-3"]}
             />
           </div>
         </div>
