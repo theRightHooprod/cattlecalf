@@ -14,22 +14,21 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import Image from "next/image";
 import { Button } from "./button";
+import MainLogo from "@/../public/logo.svg";
 
-export default function NavBar() {
+export default function NavBar({ buttonText }: { buttonText: string }) {
   return (
     <div className="fixed top-0 right-0 left-0 z-2 flex flex-col items-center gap-2 border-b border-gray-200 bg-white p-2 md:flex-row md:place-content-between md:gap-0 md:px-5 dark:bg-[var(--background)]">
       <div className="flex flex-col items-center gap-1 md:flex-row">
         <Image
+          src={MainLogo}
           className="w-20 border dark:invert"
           alt="cattlecalf logo"
-          src="/logo.svg"
-          width={500}
-          height={500}
-        ></Image>
+        />
         <p className="text-2xl">CattleCalf</p>
       </div>
       <Button className="bg-white hover:bg-gray-200 md:hover:bg-gray-200">
-        <div className="dark:text-black">Dashboard</div>
+        <div className="dark:text-black">{buttonText}</div>
       </Button>
     </div>
   );

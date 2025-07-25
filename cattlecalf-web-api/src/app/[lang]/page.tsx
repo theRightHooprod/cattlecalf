@@ -1,8 +1,15 @@
 import Image from "next/image";
 import FeatureContainer from "./ui/main-page/feature-container";
 import titlecalf from "@/../public/title_calf.svg";
+import { getDictionary } from "./dictionaries";
 
-export default function Home() {
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ lang: "en" | "es" }>;
+}) {
+  const dict = await getDictionary((await params).lang); // en
+
   return (
     <div className="mx-auto mt-39 max-w-6xl px-3 sm:px-6 md:mt-18 lg:px-12">
       <div className="relative grid w-full grid-cols-1 gap-0 border-x border-gray-200 md:grid-cols-2">
@@ -12,10 +19,10 @@ export default function Home() {
             className="mx-auto size-90 dark:invert"
             aria-details="just a brown cow looking to the left."
             alt="title calf"
-          ></Image>
+          />
           <div className="flex items-center">
             <p className="mx-auto max-w-6xl text-center text-lg">
-              Graph stadistics of your ranch focused on calves and employees.
+              {dict["main-page"]["title-titlecow"]}
             </p>
           </div>
         </div>
