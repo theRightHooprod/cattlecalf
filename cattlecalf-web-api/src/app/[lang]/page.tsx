@@ -1,6 +1,7 @@
 import Image from "next/image";
 import FeatureContainer from "./ui/main-page/feature-container";
 import titlecalf from "@/../public/title_calf.svg";
+import titlecalfConstruction from "@/../public/construction-title-calf.svg";
 import { getDictionary } from "./dictionaries";
 
 export default async function Home({
@@ -8,16 +9,20 @@ export default async function Home({
 }: {
   params: Promise<{ lang: "en" | "es" }>;
 }) {
-  const dict = await getDictionary((await params).lang); // en
+  const dict = await getDictionary((await params).lang);
 
   return (
     <div className="mx-auto mt-39 max-w-6xl px-3 sm:px-6 md:mt-18 lg:px-12">
       <div className="relative grid w-full grid-cols-1 gap-0 border-x border-gray-200 md:grid-cols-2">
         <div className="xs:p-12 xs:px-6 xs:py-12 relative col-span-2 border-0 border-b border-gray-200 p-6 px-6 py-6 md:p-16">
           <Image
-            src={titlecalf}
+            src={
+              process.env.NODE_ENV === "development"
+                ? titlecalfConstruction
+                : titlecalf
+            }
             className="mx-auto size-90 dark:invert"
-            aria-details="just a brown cow looking to the left."
+            aria-details="just a calf looking to the left."
             alt="title calf"
           />
           <div className="flex items-center">
