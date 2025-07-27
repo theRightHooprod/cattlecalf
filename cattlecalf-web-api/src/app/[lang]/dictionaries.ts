@@ -13,18 +13,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-export function Footer() {
-  return (
-    <div className="bg-background-100 flex w-full flex-col items-center border-t border-gray-200 py-13 md:items-end">
-      <div className="pl-0 md:pr-6">
-        <p>CattleCalf made with love by theRightHoopRod ❤️ </p>
-        <p className="text-center">
-          Open-Souce -{" "}
-          <code>
-            <a href="#">16b12j⇗</a>
-          </code>
-        </p>
-      </div>
-    </div>
-  );
-}
+import "server-only";
+
+const dictionaries = {
+  en: () => import("./dictionaries/en.json").then((module) => module.default),
+  es: () => import("./dictionaries/es.json").then((module) => module.default),
+};
+
+export const getDictionary = async (locale: "en" | "es") =>
+  dictionaries[locale]();
