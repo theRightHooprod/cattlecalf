@@ -4,6 +4,7 @@ import "./globals.css";
 import { Footer } from "./ui/main-page/footer";
 import NavBar from "./ui/main-page/nabvar";
 import { getDictionary } from "@/app/[lang]/dictionaries";
+import { verifySession } from "@/app/lib/dal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,14 +44,15 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: Promise<{ lang: "en" | "es" }>;
 }>) {
-  const dict = await getDictionary((await params).lang); // en
+  const dict = await getDictionary((await params).lang);
+  const session = await verifySession();
 
   return (
     <html lang={(await params).lang} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NavBar buttonText={dict.navbar["dashboard-button"]} />
+        <NavBar lang={dict.navbar} isLogged={session.isAuth} />
         {children}
         <Footer
           loveMessage={dict.footer.loveMessage}

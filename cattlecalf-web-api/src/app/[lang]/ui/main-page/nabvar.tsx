@@ -16,7 +16,16 @@ import Image from "next/image";
 import MainLogo from "@/../public/logo.svg";
 import Link from "next/link";
 
-export default function NavBar({ buttonText }: { buttonText: string }) {
+export default async function NavBar({
+  lang,
+  isLogged,
+}: {
+  lang: {
+    "dashboard-button": string;
+    "dashboard-logout": string;
+  };
+  isLogged: boolean;
+}) {
   return (
     <div className="fixed top-0 right-0 left-0 z-2 flex flex-col items-center gap-2 border-b border-gray-200 bg-white p-2 md:flex-row md:place-content-between md:gap-0 md:px-5 dark:bg-[var(--background)]">
       <div className="relative">
@@ -33,7 +42,11 @@ export default function NavBar({ buttonText }: { buttonText: string }) {
           href="/"
         ></Link>
       </div>
-      <Link href="/dashboard">Dashboard</Link>
+      {isLogged ? (
+        <Link href="/dashboard">{lang["dashboard-logout"]}</Link>
+      ) : (
+        <Link href="/dashboard">{lang["dashboard-button"]}</Link>
+      )}
     </div>
   );
 }
