@@ -30,12 +30,12 @@ export async function encrypt(payload: SessionPayload) {
     .sign(encodedKey);
 }
 
-export async function decrypt(session: string | undefined = "") {
+export async function decrypt<T>(session: string | undefined = "") {
   try {
-    const { payload } = await jwtVerify(session, encodedKey, {
+    const { payload } = await jwtVerify<T>(session, encodedKey, {
       algorithms: ["HS256"],
     });
-    return payload as SessionPayload;
+    return payload;
   } catch (error) {
     console.log("Failed to verify session");
   }
@@ -43,13 +43,20 @@ export async function decrypt(session: string | undefined = "") {
 
 export async function storeSession(session: string) {
   const cookieStore = await cookies();
-  const payload = await decrypt(session);
+  const payload = await decrypt<SessionPayload>(session);
 
   if (payload) {
+    const rawExpire = payload.expireAt;
+    const expiresAt = rawExpire ? new Date(rawExpire) : undefined;
+
+    if (expiresAt && isNaN(expiresAt.getTime())) {
+      throw new Error("Invalid expiration date in session payload");
+    }
+
     cookieStore.set("session", session, {
       httpOnly: true,
       secure: true,
-      expires: payload.expireAt,
+      expires: expiresAt,
       sameSite: "lax",
       path: "/",
     });
