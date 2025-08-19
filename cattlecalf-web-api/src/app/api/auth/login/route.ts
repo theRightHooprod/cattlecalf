@@ -13,28 +13,45 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-// import { signIn } from "@/auth";
+import prisma from "@/app/lib/prisma";
+import { encrypt } from "@/app/lib/session";
+import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { email, password } = body;
-    // await signIn("credentials", { email, password });
+  const body = await request.json();
+  const { email, password } = body;
 
-    // return new response.status(200).json({ success: true, email, password });
-    return new Response(JSON.stringify({ success: true, email, password }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    // if (error.type === "CredentialsSignin") {
-    //   res.status(401).json({ error: "Invalid credentials." });
-    // } else {
-    //   res.status(500).json({ error: "Sometrhing went wrong." });
-    // }
-    return new Response(JSON.stringify({ error: "Invalid credentials." }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+  const response = await prisma.user.findFirst({
+    where: {
+      email: email,
+    },
+  });
+
+  if (response) {
+    const comparson = await bcrypt.compare(password, response.password);
+    const token = await encrypt({});
+
+    if (comparson) {
+      return new Response(JSON.stringify({ success: true, token: token }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } else {
+      return new Response(
+        JSON.stringify({ success: false, message: "Invalid credentials" }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+  } else {
+    return new Response(
+      JSON.stringify({ success: false, message: "Invalid credentials" }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 }
