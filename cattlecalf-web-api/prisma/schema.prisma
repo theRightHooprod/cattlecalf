@@ -1,0 +1,230 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// CREATE TABLE "users" (
+//   "id" UUID,
+//   "email" TEXT,
+//   "name" TEXT,
+//   "password" TEXT,
+//   "last_name?" TEXT,
+//   "ranches_limit = 1" INT,
+//   "created_at" TIMESTAMP,
+//   PRIMARY KEY ("id")
+// );
+
+// CREATE INDEX "IND" ON  "users" ("email", "name", "last_name?");
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  name         String
+  ranchesLimit Int      @default(1)
+  createdAt    DateTime @default(now())
+  ranches      Ranch[]
+}
+
+// CREATE TABLE "ranches" (
+//   "id" UUID,
+//   "user_id" UUID,
+//   "name" TEXT,
+//   "last_modified" TIMESTAMP,
+//   PRIMARY KEY ("id"),
+//   CONSTRAINT "FK_ranches_user_id"
+//     FOREIGN KEY ("user_id")
+//       REFERENCES "users"("id")
+// );
+
+// CREATE INDEX "IND" ON  "ranches" ("name");
+
+model Ranch {
+  id           String     @id @default(uuid())
+  name         String
+  lastModified DateTime   @default(now())
+  Users        User?      @relation(fields: [usersId], references: [id])
+  usersId      String?
+  cattle       Cattle[]
+  employees    Employee[]
+}
+
+// CREATE TABLE "employees" (
+//   "id" UUID,
+//   "ranch_id" UUID,
+//   "name" TEXT,
+//   "last_name?" TEXT,
+//   "salary" FLOAT,
+//   "last_modified" TIMESTAMP,
+//   PRIMARY KEY ("id"),
+//   CONSTRAINT "FK_employees_ranch_id"
+//     FOREIGN KEY ("ranch_id")
+//       REFERENCES "ranches"("id")
+// );
+
+// CREATE INDEX "IND" ON  "employees" ("name", "last_name?");
+
+model Employee {
+  id           String     @id @default(uuid())
+  Ranch        Ranch?     @relation(fields: [ranchId], references: [id])
+  ranchId      String?
+  name         String
+  salary       Int
+  lastModified DateTime   @default(now())
+  payments     Payments[]
+}
+
+// CREATE TABLE "cattle" (
+//   "id" UUID,
+//   "ranch_id" UUID,
+//   "name?" TEXT,
+//   "cattle_pictures_id" UUID,
+//   "breed?" INT,
+//   "birth?" TIMESTAMP,
+//   "arrival?" TIMESTAMP,
+//   "sold_date?" TIMESTAMP,
+//   "last_modified" TIMESTAMP,
+//   "earring_id?" TEXT,
+//   PRIMARY KEY ("id"),
+//   CONSTRAINT "FK_cattle_ranch_id"
+//     FOREIGN KEY ("ranch_id")
+//       REFERENCES "ranches"("id")
+// );
+
+// CREATE INDEX "IND" ON  "cattle" ("name?");
+
+model Cattle {
+  id                 String               @id @default(uuid())
+  Ranch              Ranch?               @relation(fields: [ranchId], references: [id])
+  ranchId            String?
+  name               String?
+  // cattlePicture
+  breed              Int?
+  birth              DateTime?
+  arrival            DateTime?
+  soldDate           DateTime?
+  lastModified       DateTime             @default(now())
+  earring            String?
+  picture            Picture[]
+  weights            CattleWeights[]
+  AdministeredPharma AdministeredPharma[]
+}
+
+// CREATE TABLE "payments" (
+//   "id" UUID,
+//   "employee_id" UUID,
+//   "amount" FLOAT,
+//   "date" TIMESTAMP,
+//   "last_modified" TIMESTAMP,
+//   PRIMARY KEY ("id"),
+//   CONSTRAINT "FK_payments_employee_id"
+//     FOREIGN KEY ("employee_id")
+//       REFERENCES "employees"("id")
+// );
+
+model Payments {
+  id           String    @id @default(uuid())
+  Employee     Employee? @relation(fields: [employeeId], references: [id])
+  employeeId   String?
+  amount       Int
+  date         DateTime  @default(now())
+  lastModified DateTime  @default(now())
+}
+
+// CREATE TABLE "pharma" (
+//   "id" UUID,
+//   "name" TEXT,
+//   "brand?" TEXT,
+//   "notes?" TEXT,
+//   "total_ml?" INT,
+//   PRIMARY KEY ("id")
+// );
+
+// CREATE INDEX "IND" ON  "pharma" ("name", "brand?", "total_ml?");
+
+model Pharma {
+  id                 String               @id @default(uuid())
+  name               String
+  brand              String?
+  notes              String?
+  totalMl            Int?
+  pictures           Picture[]
+  AdministeredPharma AdministeredPharma[]
+}
+
+// CREATE TABLE "administered_pharma" (
+//   "id" UUID,
+//   "pharma_id" UUID,
+//   "cattle_id" UUID,
+//   "dosage?" INT,
+//   "date" TIMESTAMP,
+//   PRIMARY KEY ("id"),
+//   CONSTRAINT "FK_administered_pharma_pharma_id"
+//     FOREIGN KEY ("pharma_id")
+//       REFERENCES "pharma"("id"),
+//   CONSTRAINT "FK_administered_pharma_cattle_id"
+//     FOREIGN KEY ("cattle_id")
+//       REFERENCES "cattle"("id")
+// );
+
+model AdministeredPharma {
+  id           String   @id @default(uuid())
+  cattle       Cattle   @relation(fields: [cattleId], references: [id])
+  cattleId     String
+  pharma       Pharma   @relation(fields: [pharmaId], references: [id])
+  pharmaId     String
+  dosage       Int?
+  date         DateTime @default(now())
+  lastModified DateTime @default(now())
+}
+
+// CREATE TABLE "cattle_weights" (
+//   "id" UUID,
+//   "cattle_id" UUID,
+//   "value_kg" INT,
+//   "date" TIMESTAMP,
+//   PRIMARY KEY ("id"),
+//   CONSTRAINT "FK_cattle_weights_cattle_id"
+//     FOREIGN KEY ("cattle_id")
+//       REFERENCES "cattle"("id")
+// );
+
+model CattleWeights {
+  id           String   @id @default(uuid())
+  Cattle       Cattle?  @relation(fields: [cattleId], references: [id])
+  cattleId     String?
+  value        Int
+  date         DateTime @default(now())
+  lastModified DateTime @default(now())
+}
+
+// CREATE TABLE "pictures" (
+//   "id" UUID,
+//   "name" TEXT,
+//   "mime_type" TEXT,
+//   "binary_data" BLOB,
+//   "width" SMALLINT,
+//   "height" SMALLINT,
+//   PRIMARY KEY ("id")
+// );
+
+model Picture {
+  id         String  @id @default(uuid())
+  mimeType   String
+  binaryData Bytes
+  Cattle     Cattle? @relation(fields: [cattleId], references: [id])
+  cattleId   String?
+  Pharma     Pharma? @relation(fields: [pharmaId], references: [id])
+  pharmaId   String?
+}
