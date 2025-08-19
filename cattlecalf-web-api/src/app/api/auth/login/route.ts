@@ -33,6 +33,7 @@ export async function POST(request: Request) {
     if (comparson) {
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       const session = await encrypt({
+        userId: response.id,
         password: response.password,
         expireAt: expiresAt,
       });

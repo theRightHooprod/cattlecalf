@@ -16,9 +16,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import Negotiator from "negotiator";
 import { match } from "@formatjs/intl-localematcher";
+import { cookies } from "next/headers";
+import { decrypt } from "@/app/lib/session";
+import { NextURL } from "next/dist/server/web/next-url";
 
 const locales = ["en", "es"];
 const defaultLocale = "en";
+const protectedRoutes = ["/dashboard"];
+const publicRoutes = ["/login", "/signup", "/"];
 
 function getLocale(request: NextRequest): string {
   // Convert NextRequest headers to a plain object for Negotiator
@@ -31,7 +36,48 @@ function getLocale(request: NextRequest): string {
   return match(languages, locales, defaultLocale);
 }
 
-export function middleware(request: NextRequest) {
+function stripLocale(pathname: string): string {
+  const parts = pathname.split("/").filter(Boolean);
+  if (locales.includes(parts[0] as (typeof locales)[number])) {
+    parts.shift(); // remove the locale part
+  }
+  return "/" + parts.join("/");
+}
+
+async function authenticationRedirect(
+  request: NextRequest,
+  hasLocale: boolean,
+) {
+  const pathname = stripLocale(request.nextUrl.pathname);
+
+  const cookie = (await cookies()).get("session")?.value;
+  const session = await decrypt(cookie);
+
+  const isProtectedRoute = protectedRoutes.includes(pathname);
+  const isPublicRoute = publicRoutes.includes(pathname);
+
+  // 4. Redirect to /login if the user is not authenticated
+  if (isProtectedRoute && !session?.userId) {
+    return NextResponse.redirect(new URL("/login", request.nextUrl));
+  }
+
+  // 5. Redirect to /dashboard if the user is authenticated
+  if (
+    isPublicRoute &&
+    session?.userId &&
+    !request.nextUrl.pathname.startsWith("/dashboard")
+  ) {
+    return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
+  }
+
+  if (!hasLocale) {
+    return NextResponse.redirect(request.nextUrl);
+  }
+
+  return;
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip Next.js internal paths and APIs
@@ -45,14 +91,15 @@ export function middleware(request: NextRequest) {
   );
 
   if (pathnameHasLocale) {
-    return;
+    return await authenticationRedirect(request, pathnameHasLocale);
   }
 
   const locale = getLocale(request);
 
   // Rewrite the URL to include the detected locale
   request.nextUrl.pathname = `/${locale}${pathname}`;
-  return NextResponse.redirect(request.nextUrl);
+  // return NextResponse.redirect(request.nextUrl);
+  return await authenticationRedirect(request, false);
 }
 
 export const config = {
