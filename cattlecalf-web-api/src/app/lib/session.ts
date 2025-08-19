@@ -13,7 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import "server-only";
+"use server";
+
 import { SignJWT, jwtVerify } from "jose";
 import { SessionPayload } from "@/app/lib/definitions";
 import { cookies } from "next/headers";
@@ -34,24 +35,25 @@ export async function decrypt(session: string | undefined = "") {
     const { payload } = await jwtVerify(session, encodedKey, {
       algorithms: ["HS256"],
     });
-    return payload;
+    return payload as SessionPayload;
   } catch (error) {
     console.log("Failed to verify session");
   }
 }
 
-export async function createSession(userId: string) {
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  const session = await encrypt({ userId, expiresAt });
+export async function storeSession(session: string) {
   const cookieStore = await cookies();
+  const payload = await decrypt(session);
 
-  cookieStore.set("session", session, {
-    httpOnly: true,
-    secure: true,
-    expires: expiresAt,
-    sameSite: "lax",
-    path: "/",
-  });
+  if (payload) {
+    cookieStore.set("session", session, {
+      httpOnly: true,
+      secure: true,
+      expires: payload.expireAt,
+      sameSite: "lax",
+      path: "/",
+    });
+  }
 }
 
 export async function updateSession() {

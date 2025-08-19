@@ -29,10 +29,14 @@ export async function POST(request: Request) {
 
   if (response) {
     const comparson = await bcrypt.compare(password, response.password);
-    const token = await encrypt({});
 
     if (comparson) {
-      return new Response(JSON.stringify({ success: true, token: token }), {
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      const session = await encrypt({
+        password: response.password,
+        expireAt: expiresAt,
+      });
+      return new Response(JSON.stringify({ success: true, session: session }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });

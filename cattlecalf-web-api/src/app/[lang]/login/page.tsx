@@ -15,37 +15,17 @@
 
 "use client";
 
-import { FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
+import { login } from "@/app/actions/auth";
 
 export default function LoginPage() {
-  const router = useRouter();
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-
-    const email = formData.get("email");
-    const password = formData.get("password");
-
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (response.ok) {
-      router.push("/dashboard");
-    } else {
-    }
-  }
+  const [state, action] = useActionState(login, undefined);
 
   return (
     <div className="mx-auto mt-39 max-w-6xl md:mt-18">
       <form
         className="flex flex-col items-center justify-center gap-2"
-        onSubmit={handleSubmit}
+        action={action}
       >
         <input
           className="border border-white"
@@ -54,6 +34,7 @@ export default function LoginPage() {
           placeholder="Email"
           required
         />
+        {state?.errors?.email && <p>{state.errors.email}</p>}
         <input
           className="border border-white"
           type="password"
@@ -61,6 +42,17 @@ export default function LoginPage() {
           placeholder="Password"
           required
         />
+        {state?.errors?.password && (
+          <div>
+            <p>Password must:</p>
+            <ul>
+              {state.errors.password.map((error) => (
+                <li key={error}>- {error}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {state?.message && <p>{state.message}</p>}
         <button className="rounded-xl border border-white px-5" type="submit">
           Login
         </button>
